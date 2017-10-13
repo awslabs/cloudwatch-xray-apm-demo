@@ -2,7 +2,7 @@
 This app was used during the demo for the ARC315 session on re:Invent at 11/29/2017.
 
 Here is the overall architecture diagram for this demo:
-![alt text](https://github.com/marcosortiz/aws-apm/blob/master/img/arc_diagram.png)
+![alt text](https://github.com/awslabs/cloudwatch-xray-apm-demo/blob/master/img/arc_diagram.png)
 
 When you follow the installation instructions, the following will be installed on your instance:
 1. The sample app (my_app) from this git repo.
