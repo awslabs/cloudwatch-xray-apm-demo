@@ -56,6 +56,7 @@ IAM permissions for the CloudWatch Logs Agent:
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
+                "logs:putMetricFilter",
                 "logs:DescribeLogStreams"
             ],
             "Resource":[
@@ -96,7 +97,7 @@ sudo yum install -y git
 sudo yum install -y gcc
 sudo yum install -y ruby-devel
 gem install bundler
-cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo aws-apm && cd aws-apm && git checkout dev && mkdir logs && bundle install
+cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo aws-apm && cd aws-apm && mkdir logs && bundle install
 ```
 
 ### 2.2 Install the CloudWatch Logs Agent
@@ -177,7 +178,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "log.factorial_time", { "period": 1 } ]
+                    [ "collectd", "log.latency.factorial-average", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "period": 300,
@@ -194,7 +195,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "log.fibonacci_time", { "period": 1 } ]
+                    [ "collectd", "log.latency.fibonacci-average", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "period": 300,
