@@ -6,9 +6,8 @@ sudo yum -y install collectd-python
 sudo yum -y install collectd
 wget https://raw.githubusercontent.com/awslabs/collectd-cloudwatch/master/src/setup.py
 chmod u+x setup.py
-sudo ./setup.py
+sudo ./setup.py -m not_modify -I
 sudo service collectd stop
-# sudo kill $(ps aux | grep '[c]ollectd' | awk '{print $2}')
 sudo cp /etc/collectd.conf /etc/collectd.conf.bkp
 sudo cp ~/aws-apm/config/collectd/collectd.conf /etc/collectd.conf
 sudo cp ~/aws-apm/config/collectd/cw_plugin/collectd-cloudwatch.conf /etc/collectd-cloudwatch.conf

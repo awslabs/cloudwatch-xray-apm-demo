@@ -64,7 +64,7 @@ class MyApp
             report = "my_app.metrics "
             stats.each_with_index do |stat, i|
                 report << ' ' unless i == 0
-                report << "#{stat[:label]} #{stat[:time]}"
+                report << "#{stat[:label]} #{(stat[:time]/1000).round(6)}"
             end
             @logger.info(report)
             trace_opts[:logging] = {start_time: t0, end_time: Time.now}
