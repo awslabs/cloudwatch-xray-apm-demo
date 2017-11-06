@@ -162,7 +162,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "statsd.latency.fibonacci-average", "PluginInstance", "NONE", "Host", "instance-id>", { "period": 1 } ]
+                    [ "collectd", "statsd.latency.fibonacci-average", "PluginInstance", "NONE", "Host", "instance-id", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "title": "udp.fibonacci (s)",
