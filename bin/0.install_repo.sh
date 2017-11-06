@@ -19,3 +19,20 @@ cd ~/aws-apm
 # install xray daemon
 cd ~/aws-apm
 ./bin/3_install_xrayd.sh
+
+# Create log group and metric filters
+export AWS_DEFAULT_REGION=us-east-1
+aws logs put-metric-filter \
+  --log-group-name aws-apm-demo/my_app \
+  --filter-name FactorialLatency \
+  --filter-pattern '[recorded_at, severity, flag="my_app.metrics", k1, v1, k2, v2]' \
+  --metric-transformations \
+  'metricName=log.latency.factorial-average,metricNamespace=collectd,metricValue=$v1,defaultValue=0'
+
+aws logs put-metric-filter \
+  --log-group-name aws-apm-demo/my_app \
+  --filter-name FibonacciLatency \
+  --filter-pattern '[recorded_at, severity, flag="my_app.metrics", k1, v1, k2, v2]' \
+  --metric-transformations \
+  'metricName=log.latency.fibonacci-average,metricNamespace=collectd,metricValue=$v2,defaultValue=0'
+
