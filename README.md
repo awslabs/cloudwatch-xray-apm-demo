@@ -113,7 +113,6 @@ Run the following commands:
 cd ~/aws-apm
 ./bin/2_install_collectd.sh
 ```
->**Note:** At some point, you will be asked to give a few inputs for the cloudwatch plugin. Please presse ENTER, choosing all the defaults
 
 ### 2.4 Install the X-Ray Daemon
 Run the following commands:
@@ -128,7 +127,9 @@ cd ~/aws-apm
 3. Give it a name and click **Create dashboard**.
 4. On the **Add to this dashboard** screen, click **cancel**.
 5. Click **Actions** and then select **View/edit source**.
-6. Copy and paste the dashboard source bellow into the text area and click **Update**.
+6. Copy and paste the dashboard source bellow into the text area.
+7. Replace any occurance of **<instance-id>** by the EC2 instance id where your app is running on.
+8. Click **Update**.
 
 Dashboard source:
 ```json
