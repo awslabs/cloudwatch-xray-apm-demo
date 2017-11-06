@@ -183,7 +183,7 @@ Dashboard source:
                 ],
                 "region": "us-east-1",
                 "period": 300,
-                "title": "log.factorial(ms)"
+                "title": "log.factorial (s)"
             }
         },
         {
@@ -200,7 +200,7 @@ Dashboard source:
                 ],
                 "region": "us-east-1",
                 "period": 300,
-                "title": "log.fibonacci(ms)"
+                "title": "log.fibonacci (s)"
             }
         },
         {
