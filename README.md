@@ -128,7 +128,7 @@ cd ~/aws-apm
 4. On the **Add to this dashboard** screen, click **cancel**.
 5. Click **Actions** and then select **View/edit source**.
 6. Copy and paste the dashboard source bellow into the text area.
-7. Replace any occurance of **<instance-id>** by the EC2 instance id where your app is running on.
+7. Replace any occurance of **instance-id** by the EC2 instance id where your app is running on.
 8. Click **Update**.
 
 Dashboard source:
@@ -145,7 +145,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "statsd.latency.factorial-average", "PluginInstance", "NONE", "Host", "<instance-id>", { "period": 1 } ]
+                    [ "collectd", "statsd.latency.factorial-average", "PluginInstance", "NONE", "Host", "instance-id", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "title": "udp.factorial (s)",
@@ -162,7 +162,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "statsd.latency.fibonacci-average", "PluginInstance", "NONE", "Host", "<instance-id>", { "period": 1 } ]
+                    [ "collectd", "statsd.latency.fibonacci-average", "PluginInstance", "NONE", "Host", "instance-id", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "title": "udp.fibonacci (s)",
