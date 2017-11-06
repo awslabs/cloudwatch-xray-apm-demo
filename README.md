@@ -144,7 +144,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "statsd.latency.factorial-average", "PluginInstance", "NONE", "Host", "i-043117c6d04ba94c0", { "period": 1 } ]
+                    [ "collectd", "statsd.latency.factorial-average", "PluginInstance", "NONE", "Host", "<instance-id>", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "title": "udp.factorial (s)",
@@ -161,7 +161,7 @@ Dashboard source:
                 "view": "timeSeries",
                 "stacked": true,
                 "metrics": [
-                    [ "collectd", "statsd.latency.fibonacci-average", "PluginInstance", "NONE", "Host", "i-043117c6d04ba94c0", { "period": 1 } ]
+                    [ "collectd", "statsd.latency.fibonacci-average", "PluginInstance", "NONE", "Host", "<instance-id>", { "period": 1 } ]
                 ],
                 "region": "us-east-1",
                 "title": "udp.fibonacci (s)",
