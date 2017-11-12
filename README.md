@@ -35,7 +35,8 @@ IAM permissions for CollectD:
         {
             "Effect":"Allow",
             "Action":[
-                "cloudwatch:PutMetricData"
+                "cloudwatch:PutMetricData",
+                "cloudwatch:PutDashboard"
             ],
             "Resource":[
                 "*"
