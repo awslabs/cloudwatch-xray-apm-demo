@@ -22,6 +22,7 @@ cd ~/aws-apm
 
 # Create log group and metric filters
 export AWS_DEFAULT_REGION=us-east-1
+aws logs create-log-group --log-group-name aws-apm-demo/my_app
 aws logs put-metric-filter \
   --log-group-name aws-apm-demo/my_app \
   --filter-name FactorialLatency \
