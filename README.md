@@ -91,6 +91,12 @@ IAM permissions for the X-Ray Agent:
 To install this demo, SSH to your EC2 instance and follow the type the commands bellow:
 
 ```bash
+sudo yum update -y
+sudo yum install -y git
+sudo yum install -y gcc
+sudo yum install -y ruby-devel
+gem install bundler
+cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo.git aws-apm && cd aws-apm && git checkout initial-version && mkdir logs && bundle install
 cd ~/aws-apm
 ./bin/install.sh
 ```
