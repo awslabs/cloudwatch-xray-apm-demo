@@ -88,38 +88,11 @@ IAM permissions for the X-Ray Agent:
 ```
 
 ## 2) Installation
-To install this demo, SSH to your EC2 instance and follow the steps bellow.
+To install this demo, SSH to your EC2 instance and follow the type the commands bellow:
 
-### 2.1 Install the App From This Repo
-Run the following commands:
-```bash
-sudo yum update -y
-sudo yum install -y git
-sudo yum install -y gcc
-sudo yum install -y ruby-devel
-gem install bundler
-cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo aws-apm && cd aws-apm && mkdir logs && bundle install
-```
-
-### 2.2 Install the CloudWatch Logs Agent
-Run the following commands:
 ```bash
 cd ~/aws-apm
-./bin/1_install_cw_logsd.sh
-```
-
-### 2.3 Install CollectD
-Run the following commands:
-```bash
-cd ~/aws-apm
-./bin/2_install_collectd.sh
-```
-
-### 2.4 Install the X-Ray Daemon
-Run the following commands:
-```bash
-cd ~/aws-apm
-./bin/3_install_xrayd.sh
+./bin/install.sh
 ```
 
 ## 3) Running the App
