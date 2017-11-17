@@ -184,27 +184,18 @@ Sending 1000000 messages via UDP to localhost on port 8125 ...
 
 >**Note:** You can check the logged lines at ``~/aws-apm/logs/lattency_test.log``. The udp packages will not be sent to CloudWatch because they are not whitelisted.
 
-## 5. X-Ray Service Map Script
-This script demonstrates how can you instrument your apps on X-Ray even if you are using a programming language that doesn't have a X-Ray SDK yet.
 
-If you followed the installation instructions above, you can run it with the following commands:
-```bash
-cd ~/aws-apm
-ruby samples/???
-```
-
-## 6.References
+## 5.References
 1. CloudWatch custom metrics
-  1.1 Collectd
-  1.2 Statsd
-  1.3 Collectd statsd plugin
-  1.4 Collectd cloudwatch plugin
+    1. [Collectd](https://collectd.org/)
+    2. Statsd - [hisory](https://codeascraft.com/2011/02/15/measure-anything-measure-everything/) and [source code](https://github.com/etsy/statsd)
+    3. Collectd [statsd plugin](https://collectd.org/wiki/index.php/Plugin:StatsD)
+    4. Collectd cloudwatch plugin - [blog post](https://aws.amazon.com/blogs/aws/new-cloudwatch-plugin-for-collectd/) and [source code](https://github.com/awslabs/collectd-cloudwatch)
 2. CloudWatch Logs
-  2.1 CloudWatch Logs Agent
-  2.2 CloudWatch Logs Subscriptions
-  2.3 Centralized Logging Solution
-3. X-Rays
-  3.1 X-Ray trace documents
-  3.2 Service map demo using the X-Ray daemon
-  3.3 Quick start guide.
-  3.4 X-Ray SDKs
+    1. CloudWatch Logs Agent [reference docs](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AgentReference.html) and [quick start guide](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/EC2NewInstanceCWL.html)
+    2. [CloudWatch Logs Subscriptions](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Subscriptions.html)
+    3. [Centralized Logging Solution on AWS](https://aws.amazon.com/answers/logging/centralized-logging/)
+3. AWS X-Ray
+    1. [segment documents](http://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html)
+    2. [Getting Started](http://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html)
+    3. [SDKs](https://aws.amazon.com/documentation/xray/)
