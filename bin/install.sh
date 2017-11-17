@@ -10,15 +10,15 @@ cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo.git aws-ap
 
 # install cloudwatch logs
 cd ~/aws-apm
-./bin/1_install_cw_logsd.sh
+./bin/tasks/1_install_cw_logsd.sh
 
 # install collectd
 cd ~/aws-apm
-./bin/2_install_collectd.sh
+./bin/tasks/2_install_collectd.sh
 
 # install xray daemon
 cd ~/aws-apm
-./bin/3_install_xrayd.sh
+./bin/tasks/3_install_xrayd.sh
 
 # Create log group and metric filters
 export AWS_DEFAULT_REGION=us-east-1
