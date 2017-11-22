@@ -1,0 +1,115 @@
+Parameters:
+  KeyPair:
+    Type: "AWS::EC2::KeyPair::KeyName"
+    Description: Name of existing KeyPair for ssh access to EC2 instance
+Resources:
+  APMLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: "aws-apm-demo/my_app"
+      RetentionInDays: 7
+  FactorialLatency:
+    Type: "AWS::Logs::MetricFilter"
+    Properties:
+      FilterPattern: '[recorded_at, severity, flag="my_app.metrics", k1, v1, k2, v2]'
+      LogGroupName:
+        Ref: "APMLogGroup"
+      MetricTransformations:
+      - MetricName: log.latency.factorial-average
+        MetricNamespace: collectd
+        MetricValue: $v1
+  FibonacciLatency:
+    Type: "AWS::Logs::MetricFilter"
+    Properties:
+      FilterPattern: '[recorded_at, severity, flag="my_app.metrics", k1, v1, k2, v2]'
+      LogGroupName:
+        Ref: "APMLogGroup"
+      MetricTransformations:
+      - MetricName: log.latency.fibonacci-average
+        MetricNamespace: collectd
+        MetricValue: $v2
+  MyAPMDashboard:
+    Type: "AWS::CloudWatch::Dashboard"
+    Properties:
+      DashboardName: MyApp
+      DashboardBody: '{"widgets":[{"type":"metric","x":0,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.factorial-average","PluginInstance","NONE","Host","${EC2_INSTANCE_ID}",{"period":1}]],"region":"us-east-1","title":"udp.factorial(s)","period":300}},{"type":"metric","x":0,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.fibonacci-average","PluginInstance","NONE","Host","${EC2_INSTANCE_ID}",{"period":1}]],"region":"us-east-1","title":"udp.fibonacci(s)","period":300}},{"type":"metric","x":6,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.factorial-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.factorial(s)"}},{"type":"metric","x":6,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.fibonacci-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.fibonacci(s)"}}]}'
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+  RolePolicies:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: CloudWatchPut_Logs_Xray
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - cloudwatch:PutDashboard
+          - cloudwatch:PutMetricData
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+          - logs:putMetricFilter
+          - logs:DescribeLogStreams
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+          Resource: "*"
+      Roles:
+      - !Ref EC2Role
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref EC2Role
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref KeyPair
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      SecurityGroups:
+      - !Ref SSHSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          sudo yum update -y
+          sudo yum install -y git
+          sudo yum install -y gcc
+          sudo yum install -y ruby-devel
+          su - ec2-user -c 'gem install bundler'
+          su - ec2-user -c 'cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo.git aws-apm && cd aws-apm && git checkout initial-version && mkdir logs && bundle install'
+          su - ec2-user -c 'cd ~/aws-apm; ./bin/install.sh; cd ~/aws-apm'
+          su - ec2-user -c 'cd ~/aws-apm; nohup bundle exec samples/apps/my_app.rb &'
+      InstanceType: t2.micro
+      AvailabilityZone: us-east-1a
+      ImageId: ami-6057e21a
+      Tags:
+        -
+          Key: Name
+          Value: my_app
+
+Outputs:
+  MyInstance:
+    Value: !Ref MyInstance
+  MyInstanceDNS:
+    Value: !GetAtt MyInstance.PublicDnsName
