@@ -2,6 +2,37 @@ Parameters:
   KeyPair:
     Type: "AWS::EC2::KeyPair::KeyName"
     Description: Name of existing KeyPair for ssh access to EC2 instance
+
+Mappings:
+  RegionMap:
+    us-east-2:
+      "64": ami-15e9c770
+    us-east-1:
+      "64": ami-55ef662f
+    us-west-1:
+      "64": ami-a51f27c5
+    us-west-2:
+      "64": ami-bf4193c7
+    ca-central-1:
+      "64": ami-d29e25b6
+    ap-south-1:
+      "64": ami-d5c18eba
+    ap-northeast-2:
+      "64": ami-1196317f
+    ap-southeast-1:
+      "64": ami-c63d6aa5
+    ap-southeast-2:
+      "64": ami-ff4ea59d
+    ap-northeast-1:
+      "64": ami-da9e2cbc
+    eu-central-1:
+      "64": ami-bf2ba8d0
+    eu-west-1:
+      "64": ami-1a962263
+    eu-west-2:
+      "64": ami-e7d6c983
+    sa-east-1:
+      "64": ami-286f2a44
 Resources:
   APMLogGroup:
     Type: AWS::Logs::LogGroup
@@ -31,8 +62,11 @@ Resources:
   MyAPMDashboard:
     Type: "AWS::CloudWatch::Dashboard"
     Properties:
-      DashboardName: MyApp
-      DashboardBody: !Join ["", ['{"widgets":[{"type":"metric","x":0,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.factorial-average","PluginInstance","NONE","Host","', Ref: MyInstance,'",{"period":1}]],"region":"us-east-1","title":"udp.factorial(s)","period":300}},{"type":"metric","x":0,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.fibonacci-average","PluginInstance","NONE","Host","', Ref: MyInstance, '",{"period":1}]],"region":"us-east-1","title":"udp.fibonacci(s)","period":300}},{"type":"metric","x":6,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.factorial-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.factorial(s)"}},{"type":"metric","x":6,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.fibonacci-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.fibonacci(s)"}}]}']]
+      # global unique name
+      DashboardName: !Sub '${AWS::StackName}-${AWS::Region}'
+      DashboardBody: !Sub
+        - '{"widgets":[{"type":"metric","x":0,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.factorial-average","PluginInstance","NONE","Host","${EC2_INSTANCE_ID}",{"period":1}]],"region":"${AWS::Region}","title":"udp.factorial(s)","period":300}},{"type":"metric","x":0,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.fibonacci-average","PluginInstance","NONE","Host", "${EC2_INSTANCE_ID}",{"period":1}]],"region":"${AWS::Region}","title":"udp.fibonacci(s)","period":300}},{"type":"metric","x":6,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.factorial-average",{"period":1}]],"region":"${AWS::Region}","period":300,"title":"log.factorial(s)"}},{"type":"metric","x":6,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.fibonacci-average",{"period":1}]],"region":"${AWS::Region}","period":300,"title":"log.fibonacci(s)"}}]}'
+        - {EC2_INSTANCE_ID: !Ref MyInstance}
   SSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -92,24 +126,50 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
-          sudo yum update -y
-          sudo yum install -y git
-          sudo yum install -y gcc
-          sudo yum install -y ruby-devel
+          yum update -y
+          yum install -y git
+          yum install -y gcc
+          yum install -y ruby-devel
           su - ec2-user -c 'gem install bundler'
           su - ec2-user -c 'cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo.git aws-apm && cd aws-apm && git checkout initial-version && mkdir logs && bundle install'
-          su - ec2-user -c 'cd ~/aws-apm; ./bin/install.sh; cd ~/aws-apm'
+          # CloudWatch Logs Agent
+          cd ~
+          yum install -y awslogs
+          service awslogs stop
+          cp /etc/awslogs/awslogs.conf /etc/awslogs/awslogs.conf.bkp
+          cp /home/ec2-user/aws-apm/config/cw_logs/cw_logs.conf /etc/awslogs/awslogs.conf
+          sed -i 's/region\s*=\s*.*/region=${AWS::Region}/g' /etc/awslogs/awscli.conf
+          service awslogs start
+          chkconfig awslogs on
+          # collectd
+          yum -y install collectd-python
+          yum -y install collectd
+          wget https://raw.githubusercontent.com/awslabs/collectd-cloudwatch/master/src/setup.py
+          chmod u+x setup.py
+          ./setup.py -m not_modify -I
+          service collectd stop
+          cp -f /etc/collectd.conf /etc/collectd.conf.bkp
+          cp -f /home/ec2-user/aws-apm/config/collectd/collectd.conf /etc/collectd.conf
+          cp -f /home/ec2-user/aws-apm/config/collectd/cw_plugin/collectd-cloudwatch.conf /etc/collectd-cloudwatch.conf
+          cp -f /home/ec2-user/aws-apm/config/collectd/cw_plugin/cw_plugin.conf /opt/collectd-plugins/cloudwatch/config/plugin.conf
+          cp /home/ec2-user/aws-apm/config/collectd/cw_plugin/whitelist.conf /opt/collectd-plugins/cloudwatch/config/whitelist.conf
+          service collectd start
+          chkconfig collectd on
+          # X-Ray
+          curl https://s3.dualstack.us-east-2.amazonaws.com/aws-xray-assets.us-east-2/xray-daemon/aws-xray-daemon-2.x.rpm -o xray.rpm
+          sudo yum install -y xray.rpm
+          # Start background process
           su - ec2-user -c 'cd ~/aws-apm; nohup bundle exec samples/apps/my_app.rb &'
       InstanceType: t2.micro
       AvailabilityZone:
         Fn::Select:
           - 0
-          - Fn::GetAZs: us-east-1
-      ImageId: ami-6057e21a
+          - Fn::GetAZs: !Ref "AWS::Region"
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", 64]
       Tags:
         -
           Key: Name
-          Value: my_app
+          Value: !Sub '${AWS::StackName}'
 
 Outputs:
   MyInstance:
