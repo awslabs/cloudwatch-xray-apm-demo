@@ -32,7 +32,7 @@ Resources:
     Type: "AWS::CloudWatch::Dashboard"
     Properties:
       DashboardName: MyApp
-      DashboardBody: '{"widgets":[{"type":"metric","x":0,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.factorial-average","PluginInstance","NONE","Host","${EC2_INSTANCE_ID}",{"period":1}]],"region":"us-east-1","title":"udp.factorial(s)","period":300}},{"type":"metric","x":0,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.fibonacci-average","PluginInstance","NONE","Host","${EC2_INSTANCE_ID}",{"period":1}]],"region":"us-east-1","title":"udp.fibonacci(s)","period":300}},{"type":"metric","x":6,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.factorial-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.factorial(s)"}},{"type":"metric","x":6,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.fibonacci-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.fibonacci(s)"}}]}'
+      DashboardBody: !Join ["", ['{"widgets":[{"type":"metric","x":0,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.factorial-average","PluginInstance","NONE","Host","', Ref: MyInstance,'",{"period":1}]],"region":"us-east-1","title":"udp.factorial(s)","period":300}},{"type":"metric","x":0,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","statsd.latency.fibonacci-average","PluginInstance","NONE","Host","', Ref: MyInstance, '",{"period":1}]],"region":"us-east-1","title":"udp.fibonacci(s)","period":300}},{"type":"metric","x":6,"y":0,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.factorial-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.factorial(s)"}},{"type":"metric","x":6,"y":6,"width":6,"height":6,"properties":{"view":"timeSeries","stacked":true,"metrics":[["collectd","log.latency.fibonacci-average",{"period":1}]],"region":"us-east-1","period":300,"title":"log.fibonacci(s)"}}]}']]
   SSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -101,7 +101,10 @@ Resources:
           su - ec2-user -c 'cd ~/aws-apm; ./bin/install.sh; cd ~/aws-apm'
           su - ec2-user -c 'cd ~/aws-apm; nohup bundle exec samples/apps/my_app.rb &'
       InstanceType: t2.micro
-      AvailabilityZone: us-east-1a
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: us-east-1
       ImageId: ami-6057e21a
       Tags:
         -
