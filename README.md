@@ -25,8 +25,6 @@ This demo runs on a t2.micro EC2 instance.
 
 ## 2) Installation
 
-To install this demo, click the button bellow:
-
 [Launch Stack](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=cloudwatch-xray-apm-demo&templateURL=https://github.com/awslabs/cloudwatch-xray-apm-demo/blob/adding-cfn/cloudformation/cloudwatch-xray-apm-demo-cfn.yaml)
 
 
