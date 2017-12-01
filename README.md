@@ -18,88 +18,15 @@ When you run this application, it will log data into a log file, send metrics to
 
 ## 1) Requirements
 
-### 1.1) EC2 instance
-This application has only been tested on the latest Amazon Linux AMI. The instance needs to have access to the internate in order to install all the packages needed and send data to CloudWatch and X-Ray.
+This application has only been tested on the latest Amazon Linux AMI. The instance needs to have access to the internet in order to install all the packages needed and send data to CloudWatch and X-Ray.
 
-This demo runs on an EC2 instance and a t2.micro instance can handle it. 
+This demo runs on a t2.micro EC2 instance. 
 
-### 1.2) IAM permissions
-
-Make sure your EC2 uses an IAM role with the following permissions:
-
-IAM permissions for CollectD:
-```json
-{
-    "Version":"2012-10-17",
-    "Statement":[
-        {
-            "Effect":"Allow",
-            "Action":[
-                "cloudwatch:PutMetricData",
-                "cloudwatch:PutDashboard"
-            ],
-            "Resource":[
-                "*"
-            ]
-        }
-    ]
-}
-```
-
-IAM permissions for the CloudWatch Logs Agent:
-```json
-{
-    "Version":"2012-10-17",
-    "Statement":[
-        {
-            "Effect":"Allow",
-            "Action":[
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:putMetricFilter",
-                "logs:DescribeLogStreams"
-            ],
-            "Resource":[
-                "arn:aws:logs:*:*:*"
-            ]
-        }
-    ]
-}
-```
-
-IAM permissions for the X-Ray Agent:
-```json
-{
-    "Version":"2012-10-17",
-    "Statement":[
-        {
-            "Effect":"Allow",
-            "Action":[
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords"
-            ],
-            "Resource":[
-                "*"
-            ]
-        }
-    ]
-}
-```
 
 ## 2) Installation
-To install this demo, SSH to your EC2 instance and follow the type the commands bellow:
 
-```bash
-sudo yum update -y
-sudo yum install -y git
-sudo yum install -y gcc
-sudo yum install -y ruby-devel
-gem install bundler
-cd ~ && git clone https://github.com/awslabs/cloudwatch-xray-apm-demo.git aws-apm && cd aws-apm && git checkout initial-version && mkdir logs && bundle install
-cd ~/aws-apm
-./bin/install.sh
-```
+[Launch Stack](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=cloudwatch-xray-apm-demo&templateURL=https://s3.amazonaws.com/cloudwatch-xray-apm-demo/cloudwatch-xray-apm-demo-cfn.yaml)
+
 
 ## 3) Running the App
 
